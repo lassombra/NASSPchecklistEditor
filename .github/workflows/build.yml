@@ -8,19 +8,16 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up Qt
-      uses: jurplel/install-qt-action@v2
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4.1.1
       with:
-        version: '5.15.2' # Specify your required Qt version
-        host: ubuntu
-        target: desktop
-        arch: gcc_64
+        version: 6.8.2
 
     - name: Install dependencies
       run: sudo apt-get install build-essential
