@@ -18,20 +18,23 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::createMenus() {
-
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
     QAction *openAction = new QAction(tr("&Open"));
-    connect(openAction, &QAction::triggered, this, &MainWindow::openFile);
-    fileMenu->addAction(openAction);
     QAction *saveAction = new QAction(tr("&Save"));
-    connect(saveAction, &QAction::triggered, this, &MainWindow::saveFile);
-    fileMenu->addAction(saveAction);
-    QAction *closeAction = new QAction(tr("&Close"));
-    connect(closeAction, &QAction::triggered, this, &MainWindow::closeFile);
-    fileMenu->addAction(closeAction);
+    closeAction = new QAction(tr("&Close"));
     QAction *exitAction = new QAction(tr("E&xit"));
+
+    connect(openAction, &QAction::triggered, this, &MainWindow::openFile);
+    connect(saveAction, &QAction::triggered, this, &MainWindow::saveFile);
+    connect(closeAction, &QAction::triggered, this, &MainWindow::closeFile);
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
+
+    fileMenu->addAction(openAction);
+    fileMenu->addAction(saveAction);
+    fileMenu->addAction(closeAction);
     fileMenu->addAction(exitAction);
+
+    closeAction->setEnabled(false);
 }
 
 void MainWindow::createStatusBar() {
@@ -61,6 +64,7 @@ void MainWindow::openFile() {
     EditTable* table = new EditTable(filename, this);
     table->loadData(lines);
     setCentralWidget(table);
+    closeAction->setEnabled(true);
 }
 
 void MainWindow::saveFile() {
@@ -73,6 +77,7 @@ void MainWindow::closeFile() {
     if(this->centralWidget() != nullptr) {
         setCentralWidget(nullptr);
     }
+    closeAction->setEnabled(false);
 }
 
 void writeStatusText(QString message) {

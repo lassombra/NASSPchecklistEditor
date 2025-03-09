@@ -17,7 +17,10 @@ private:
     void saveFile();
     void closeFile();
 
+    QAction* closeAction;
+
 signals:
+
 };
 
 void writeStatusText(QString);
