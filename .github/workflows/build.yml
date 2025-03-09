@@ -30,7 +30,7 @@ jobs:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
     - name: Configure using CMake
-      run: cmake -S . -B build --config Release
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
       
     - name: Build
       run: cmake --build build
