@@ -41,5 +41,5 @@ jobs:
     - name: Upload build artifact
       uses: actions/upload-artifact@v4.6.1
       with:
-        name: editor.exe
+        name: editor
         path: D:\a\NASSPchecklistEditor\NASSPchecklistEditor\build\Debug\
