@@ -4,7 +4,11 @@ on:
   push:
     branches:
       - main
-      - buildbot
+  pull_request:
+    types:
+      - opened
+    branches:
+      - main
 
 jobs:
   build:
