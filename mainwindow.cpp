@@ -26,6 +26,9 @@ void MainWindow::createMenus() {
     QAction *saveAction = new QAction(tr("&Save"));
     connect(saveAction, &QAction::triggered, this, &MainWindow::saveFile);
     fileMenu->addAction(saveAction);
+    QAction *closeAction = new QAction(tr("&Close"));
+    connect(closeAction, &QAction::triggered, this, &MainWindow::closeFile);
+    fileMenu->addAction(closeAction);
     QAction *exitAction = new QAction(tr("E&xit"));
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
     fileMenu->addAction(exitAction);
@@ -63,6 +66,12 @@ void MainWindow::openFile() {
 void MainWindow::saveFile() {
     if (this->centralWidget() != nullptr) {
         ((EditTable*) this->centralWidget())->save();
+    }
+}
+
+void MainWindow::closeFile() {
+    if(this->centralWidget() != nullptr) {
+        setCentralWidget(nullptr);
     }
 }
 

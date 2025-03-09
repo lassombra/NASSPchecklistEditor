@@ -15,6 +15,7 @@ private:
     void createStatusBar();
     void openFile();
     void saveFile();
+    void closeFile();
 
 signals:
 };
