@@ -31,9 +31,15 @@ jobs:
 
     - name: Configure using CMake
       run: cmake -S . -B build
-
+      
     - name: Build
       run: cmake --build build
-
+      
     - name: Run tests
       run: ctest --output-on-failure
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4.6.1
+      with:
+        name: editor.exe
+        path: D:\a\NASSPchecklistEditor\NASSPchecklistEditor\build\Debug\
