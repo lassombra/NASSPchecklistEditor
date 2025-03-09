@@ -18,9 +18,8 @@ jobs:
       uses: jurplel/install-qt-action@v4.1.1
       with:
         version: 6.8.2
-
-    - name: Install dependencies
-      run: sudo apt-get install build-essential
+    - name: install-cmake
+      uses: Symbitic/install-cmake@v0.1.0
 
     - name: Configure using CMake
       run: cmake -S . -B build
