@@ -65,7 +65,7 @@ void EditTable::saveAs(QString filename) {
     writeStatusText("Writing file to " + filename);
     QFile file(filename);
 
-    if (!file.open(QIODevice::ReadWrite | QIODevice::Text)) {
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         return;
     }
     QList<QStringList> rows = {};
@@ -96,6 +96,7 @@ void EditTable::saveAs(QString filename) {
             stream << "\n";
         }
     }
+    stream.flush();
     file.close();
     writeStatusText(filename + " saved");
 }
