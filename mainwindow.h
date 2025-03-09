@@ -13,12 +13,12 @@ public:
 private:
     void createMenus();
     void createStatusBar();
-    void createTable();
     void openFile();
-
-    QTableWidget *tableView;
+    void saveFile();
 
 signals:
 };
+
+void writeStatusText(QString);
 
 #endif // MAINWINDOW_H
