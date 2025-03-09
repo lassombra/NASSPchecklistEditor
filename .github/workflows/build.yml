@@ -1,0 +1,35 @@
+name: Build Qt Project
+
+on:
+  push:
+    branches:
+      - main
+      - buildbot
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.15.2' # Specify your required Qt version
+        host: ubuntu
+        target: desktop
+        arch: gcc_64
+
+    - name: Install dependencies
+      run: sudo apt-get install build-essential
+
+    - name: Configure using CMake
+      run: cmake -S . -B build
+
+    - name: Build
+      run: cmake --build build
+
+    - name: Run tests
+      run: ctest --output-on-failure
