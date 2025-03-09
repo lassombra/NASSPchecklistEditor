@@ -18,8 +18,11 @@ jobs:
       uses: jurplel/install-qt-action@v4.1.1
       with:
         version: 6.8.2
+        
     - name: install-cmake
       uses: Symbitic/install-cmake@v0.1.0
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
     - name: Configure using CMake
       run: cmake -S . -B build
