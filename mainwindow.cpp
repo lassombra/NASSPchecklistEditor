@@ -1,40 +1,53 @@
 #include "mainwindow.h"
-#include "edittable.h"
 #include <QMenuBar>
 #include <QFileDialog>
 #include <QStatusBar>
 
-MainWindow* mainWindowHandle;
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent}
 {
+    initializeTabControl();
     createMenus();
     createStatusBar();
     setContentsMargins(0,0,0,0);
     setMinimumHeight(500);
     setMinimumWidth(500);
-    mainWindowHandle = this;
 }
 
 void MainWindow::createMenus() {
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
-    QAction *openAction = new QAction(tr("&Open"));
+    QAction *openAction = new QAction(tr("&Open..."));
     QAction *saveAction = new QAction(tr("&Save"));
-    closeAction = new QAction(tr("&Close"));
+    QAction *saveAsAction = new QAction(tr("Save &As..."));
+    QAction *saveAllAction = new QAction(tr("Save All"));
+    QAction *closeAction = new QAction(tr("&Close"));
     QAction *exitAction = new QAction(tr("E&xit"));
 
     connect(openAction, &QAction::triggered, this, &MainWindow::openFile);
-    connect(saveAction, &QAction::triggered, this, &MainWindow::saveFile);
-    connect(closeAction, &QAction::triggered, this, &MainWindow::closeFile);
+    connect(saveAction, &QAction::triggered, tabControl, &FileTabControl::save);
+    connect(saveAllAction, &QAction::triggered, tabControl, &FileTabControl::saveAll);
+    connect(saveAsAction, &QAction::triggered, this, &MainWindow::saveAs);
+    connect(closeAction, &QAction::triggered, tabControl, &FileTabControl::closeFile);
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
+
+    // attach close/save/saveall to tabcontrol to set their enabled state
+    connect(tabControl, SIGNAL(fileStatusChanged(bool)), saveAction, SLOT(setEnabled(bool)));
+    connect(tabControl, SIGNAL(fileStatusChanged(bool)), closeAction, SLOT(setEnabled(bool)));
+    connect(tabControl, SIGNAL(fileStatusChanged(bool)), saveAsAction, SLOT(setEnabled(bool)));
+    connect(tabControl, SIGNAL(fileStatusChanged(bool)), saveAllAction, SLOT(setEnabled(bool)));
 
     fileMenu->addAction(openAction);
     fileMenu->addAction(saveAction);
+    fileMenu->addAction(saveAsAction);
+    fileMenu->addAction(saveAllAction);
     fileMenu->addAction(closeAction);
+    fileMenu->addSeparator();
     fileMenu->addAction(exitAction);
 
     closeAction->setEnabled(false);
+    saveAction->setEnabled(false);
+    saveAsAction->setEnabled(false);
+    saveAllAction->setEnabled(false);
 }
 
 void MainWindow::createStatusBar() {
@@ -53,33 +66,25 @@ void MainWindow::openFile() {
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return;
     }
+    tabControl->openFile(filename);
+}
 
-    QTextStream in(&file);
-    QStringList lines;
-    while (!in.atEnd()) {
-        lines << in.readLine();
+void MainWindow::saveAs()
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), filename, tr("Flight Plan Files (*.tsv)"));
+    if (filename.isEmpty()) {
+        return;
     }
-    file.close();
 
-    EditTable* table = new EditTable(filename, this);
-    table->loadData(lines);
-    setCentralWidget(table);
-    closeAction->setEnabled(true);
+    tabControl->saveAs(filename);
 }
 
-void MainWindow::saveFile() {
-    if (this->centralWidget() != nullptr) {
-        ((EditTable*) this->centralWidget())->save();
-    }
+void MainWindow::initializeTabControl() {
+    tabControl = new FileTabControl(this);
+
+    connect(tabControl, SIGNAL(messageGenerated(QString)), statusBar(), SLOT(showMessage(QString)));
+
+    setCentralWidget(tabControl);
 }
 
-void MainWindow::closeFile() {
-    if(this->centralWidget() != nullptr) {
-        setCentralWidget(nullptr);
-    }
-    closeAction->setEnabled(false);
-}
 
-void writeStatusText(QString message) {
-    mainWindowHandle->statusBar()->showMessage(message);
-}

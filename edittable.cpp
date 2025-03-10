@@ -2,7 +2,6 @@
 #include <QVBoxLayout>
 #include <QFile>
 #include <QTextStream>
-#include "mainwindow.h"
 
 EditTable::EditTable(QString filename, QWidget *parent)
     : QWidget{parent}
@@ -62,10 +61,10 @@ void EditTable::save() {
 }
 
 void EditTable::saveAs(QString filename) {
-    writeStatusText("Writing file to " + filename);
     QFile file(filename);
-
+    emit messageGenerated("Saving file " + filename);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        emit messageGenerated("Could not open for writing: " + filename);
         return;
     }
     QList<QStringList> rows = {};
@@ -98,5 +97,5 @@ void EditTable::saveAs(QString filename) {
     }
     stream.flush();
     file.close();
-    writeStatusText(filename + " saved");
+    emit messageGenerated("Saved " + filename);
 }
