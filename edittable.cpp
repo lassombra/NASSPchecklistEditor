@@ -3,10 +3,11 @@
 #include <QFile>
 #include <QTextStream>
 
-EditTable::EditTable(QString filename, QWidget *parent)
+EditTable::EditTable(QString filename, QList<QStringList> data, QWidget *parent)
     : QTableWidget{parent}
 {
     this->filename = filename;
+    setFullData(data);
     m_secured = false;
 }
 
@@ -24,15 +25,15 @@ QStringList generateHeaders(int count) {
     return headers;
 }
 
-void EditTable::loadData(QStringList& data) {
+void EditTable::setFullData(QList<QStringList> data) {
     int rowCount = data.size();
-    int columnCount = data.first().split("\t").size();
+    int columnCount = data.first().size();
 
     setRowCount(rowCount+1);
     setColumnCount(columnCount);
     setHorizontalHeaderLabels(generateHeaders(columnCount));
     for (int row = 0; row < rowCount; row++) {
-        QStringList columns = data[row].split("\t");
+        QStringList columns = data[row];
         for (int column = 0; column < columnCount; column++){
             if (column < columns.size()) {
                 setItem(row, column, new QTableWidgetItem(columns[column]));
@@ -47,19 +48,10 @@ void EditTable::loadData(QStringList& data) {
     if (m_secured) {
         setColumnHidden(columnCount - 1, true);
     }
+    emit fullDataChanged(data);
 }
 
-void EditTable::save() {
-    saveAs(filename);
-}
-
-void EditTable::saveAs(QString filename) {
-    QFile file(filename);
-    emit messageGenerated("Saving file " + filename);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        emit messageGenerated("Could not open for writing: " + filename);
-        return;
-    }
+const QList<QStringList> EditTable::fullData() {
     QList<QStringList> rows = {};
     for(int row = 0; row < rowCount(); row++) {
         QStringList columns = {};
@@ -81,7 +73,22 @@ void EditTable::saveAs(QString filename) {
             rows.removeLast();
         }
     }
+    return rows;
+}
+
+void EditTable::save() {
+    saveAs(filename);
+}
+
+void EditTable::saveAs(QString filename) {
+    QFile file(filename);
+    emit messageGenerated("Saving file " + filename);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        emit messageGenerated("Could not open for writing: " + filename);
+        return;
+    }
     QTextStream stream(&file);
+    const QList<QStringList> rows = fullData();
     for(int row = 0; row < rows.count(); row++) {
         stream << rows[row].join("\t");
         if (row < rows.count() - 1) {

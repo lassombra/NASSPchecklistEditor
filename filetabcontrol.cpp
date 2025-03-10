@@ -21,13 +21,12 @@ void FileTabControl::openFile(QString filename) {
         return;
     }
     QTextStream stream(&file);
-    QStringList rows = {};
+    QList<QStringList> rows = {};
     while (!stream.atEnd()) {
-        rows << stream.readLine();
+        rows << stream.readLine().split("\t");
     }
-    EditTable* table = new EditTable(filename);
+    EditTable* table = new EditTable(filename, rows);
     table->setSecured(true);
-    table->loadData(rows);
     connect(table, &EditTable::messageGenerated, this, &FileTabControl::messageGenerated);
     tabControl->addTab(table, "Tab");
     if (firstFile) {
