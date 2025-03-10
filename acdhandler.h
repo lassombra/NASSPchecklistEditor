@@ -2,6 +2,7 @@
 #define ACDHANDLER_H
 
 #include <QWidget>
+#include "edittable.h"
 #include "filetabcontrol.h"
 
 class ACDHandler : public QWidget
@@ -10,11 +11,13 @@ class ACDHandler : public QWidget
 public:
     explicit ACDHandler(QWidget *parent = nullptr);
 public slots:
-    // void load(QString filename);
-    // void save();
-    // void close();
+    void load(QString filename);
+    void save();
+    void close();
 private:
+    QList<QStringList> parseFile(QString filename);
     FileTabControl* tabControl;
+    EditTable* mainTable;
 signals:
     void statusMessage(QString message);
     void fileLoadedChanged(bool loaded);

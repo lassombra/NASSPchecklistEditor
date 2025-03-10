@@ -8,6 +8,7 @@ EditTable::EditTable(QString filename, QWidget *parent)
 {
     this->filename = filename;
     createEmptyTable();
+    m_secured = false;
 }
 
 QStringList generateHeaders(int count) {
@@ -43,6 +44,9 @@ void EditTable::loadData(QStringList& data) {
     }
     for(int column = 0; column < columnCount; column++){
         tableView->setItem(rowCount, column, new QTableWidgetItem(""));
+    }
+    if (m_secured) {
+        tableView->setColumnHidden(tableView->columnCount() - 1, true);
     }
 }
 
@@ -98,4 +102,16 @@ void EditTable::saveAs(QString filename) {
     stream.flush();
     file.close();
     emit messageGenerated("Saved " + filename);
+}
+
+void EditTable::setSecured(bool secured) {
+    if (m_secured != secured) {
+        m_secured = secured;
+        tableView->setColumnHidden(tableView->columnCount() - 1, secured);
+        emit securedChanged(secured);
+    }
+}
+
+const bool EditTable::secured() {
+    return m_secured;
 }
