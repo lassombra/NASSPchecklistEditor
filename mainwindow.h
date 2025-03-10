@@ -16,6 +16,7 @@ private:
     void createStatusBar();
     void initializeTabControl();
     void openFile();
+    void saveAs();
 private:
     FileTabControl* tabControl;
 

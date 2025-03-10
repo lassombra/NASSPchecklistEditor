@@ -64,6 +64,7 @@ void EditTable::saveAs(QString filename) {
     QFile file(filename);
     emit messageGenerated("Saving file " + filename);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        emit messageGenerated("Could not open for writing: " + filename);
         return;
     }
     QList<QStringList> rows = {};

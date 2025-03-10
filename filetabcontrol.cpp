@@ -52,8 +52,11 @@ void FileTabControl::save() {
     }
 }
 
-void FileTabControl::saveAs() {
-
+void FileTabControl::saveAs(QString filename) {
+    if(tabControl->count() > 0) {
+        EditTable* table = (EditTable*)tabControl->currentWidget();
+        table->saveAs(filename);
+    }
 }
 
 void FileTabControl::saveAll() {
