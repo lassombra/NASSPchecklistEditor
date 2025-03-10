@@ -4,10 +4,9 @@
 #include <QTextStream>
 
 EditTable::EditTable(QString filename, QWidget *parent)
-    : QWidget{parent}
+    : QTableWidget{parent}
 {
     this->filename = filename;
-    createEmptyTable();
     m_secured = false;
 }
 
@@ -29,35 +28,25 @@ void EditTable::loadData(QStringList& data) {
     int rowCount = data.size();
     int columnCount = data.first().split("\t").size();
 
-    tableView->setRowCount(rowCount+1);
-    tableView->setColumnCount(columnCount);
-    tableView->setHorizontalHeaderLabels(generateHeaders(columnCount));
+    setRowCount(rowCount+1);
+    setColumnCount(columnCount);
+    setHorizontalHeaderLabels(generateHeaders(columnCount));
     for (int row = 0; row < rowCount; row++) {
         QStringList columns = data[row].split("\t");
         for (int column = 0; column < columnCount; column++){
             if (column < columns.size()) {
-                tableView->setItem(row, column, new QTableWidgetItem(columns[column]));
+                setItem(row, column, new QTableWidgetItem(columns[column]));
             } else {
-                tableView->setItem(row, column, new QTableWidgetItem(""));
+                setItem(row, column, new QTableWidgetItem(""));
             }
         }
     }
     for(int column = 0; column < columnCount; column++){
-        tableView->setItem(rowCount, column, new QTableWidgetItem(""));
+        setItem(rowCount, column, new QTableWidgetItem(""));
     }
     if (m_secured) {
-        tableView->setColumnHidden(tableView->columnCount() - 1, true);
+        setColumnHidden(columnCount - 1, true);
     }
-}
-
-void EditTable::createEmptyTable() {
-    tableView = new QTableWidget(this);
-    QLayout* layout = new QVBoxLayout();
-    layout->addWidget(tableView);
-    layout->setContentsMargins(0,0,0,0);
-    setLayout(layout);
-    this->setContentsMargins(0,0,0,0);
-    this->setStyleSheet("EditTable {border: none; }");
 }
 
 void EditTable::save() {
@@ -72,10 +61,10 @@ void EditTable::saveAs(QString filename) {
         return;
     }
     QList<QStringList> rows = {};
-    for(int row = 0; row < tableView->rowCount(); row++) {
+    for(int row = 0; row < rowCount(); row++) {
         QStringList columns = {};
-        for (int col = 0; col < tableView->columnCount(); col++) {
-            columns << tableView->item(row, col)->text();
+        for (int col = 0; col < columnCount(); col++) {
+            columns << item(row, col)->text();
         }
         rows << columns;
     }
@@ -107,7 +96,7 @@ void EditTable::saveAs(QString filename) {
 void EditTable::setSecured(bool secured) {
     if (m_secured != secured) {
         m_secured = secured;
-        tableView->setColumnHidden(tableView->columnCount() - 1, secured);
+        setColumnHidden(columnCount() - 1, secured);
         emit securedChanged(secured);
     }
 }

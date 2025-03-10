@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QTableWidget>
 
-class EditTable : public QWidget
+class EditTable : public QTableWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool secured READ secured WRITE setSecured NOTIFY securedChanged FINAL)
@@ -17,9 +17,7 @@ public:
     void setSecured(bool secured);
 
 protected:
-    void createEmptyTable();
     QString filename;
-    QTableWidget* tableView;
 private:
     bool m_secured;
 signals:
