@@ -1,3 +1,4 @@
+#include "acdedittable.h"
 #include "edittable.h"
 #include "filetabcontrol.h"
 #include <QVBoxLayout>
@@ -25,7 +26,7 @@ void FileTabControl::openFile(QString filename) {
     while (!stream.atEnd()) {
         rows << stream.readLine();
     }
-    EditTable* table = new EditTable(filename);
+    EditTable* table = new ACDEditTable(filename);
     table->loadData(rows);
     connect(table, &EditTable::messageGenerated, this, &FileTabControl::messageGenerated);
     tabControl->addTab(table, "Tab");
@@ -48,20 +49,6 @@ void FileTabControl::closeFile() {
 void FileTabControl::save() {
     if (tabControl->count() > 0) {
         EditTable* table = (EditTable*)tabControl->currentWidget();
-        table->save();
-    }
-}
-
-void FileTabControl::saveAs(QString filename) {
-    if(tabControl->count() > 0) {
-        EditTable* table = (EditTable*)tabControl->currentWidget();
-        table->saveAs(filename);
-    }
-}
-
-void FileTabControl::saveAll() {
-    for(int i = 0; i < tabControl->count(); i++) {
-        EditTable* table = (EditTable*)tabControl->widget(i);
         table->save();
     }
 }

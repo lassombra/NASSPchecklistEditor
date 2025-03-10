@@ -19,13 +19,11 @@ void MainWindow::createMenus() {
     QAction *openAction = new QAction(tr("&Open..."));
     QAction *saveAction = new QAction(tr("&Save"));
     QAction *saveAsAction = new QAction(tr("Save &As..."));
-    QAction *saveAllAction = new QAction(tr("Save All"));
     QAction *closeAction = new QAction(tr("&Close"));
     QAction *exitAction = new QAction(tr("E&xit"));
 
     connect(openAction, &QAction::triggered, this, &MainWindow::openFile);
     connect(saveAction, &QAction::triggered, tabControl, &FileTabControl::save);
-    connect(saveAllAction, &QAction::triggered, tabControl, &FileTabControl::saveAll);
     connect(saveAsAction, &QAction::triggered, this, &MainWindow::saveAs);
     connect(closeAction, &QAction::triggered, tabControl, &FileTabControl::closeFile);
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
@@ -34,12 +32,10 @@ void MainWindow::createMenus() {
     connect(tabControl, SIGNAL(fileStatusChanged(bool)), saveAction, SLOT(setEnabled(bool)));
     connect(tabControl, SIGNAL(fileStatusChanged(bool)), closeAction, SLOT(setEnabled(bool)));
     connect(tabControl, SIGNAL(fileStatusChanged(bool)), saveAsAction, SLOT(setEnabled(bool)));
-    connect(tabControl, SIGNAL(fileStatusChanged(bool)), saveAllAction, SLOT(setEnabled(bool)));
 
     fileMenu->addAction(openAction);
     fileMenu->addAction(saveAction);
     fileMenu->addAction(saveAsAction);
-    fileMenu->addAction(saveAllAction);
     fileMenu->addAction(closeAction);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAction);
@@ -47,7 +43,6 @@ void MainWindow::createMenus() {
     closeAction->setEnabled(false);
     saveAction->setEnabled(false);
     saveAsAction->setEnabled(false);
-    saveAllAction->setEnabled(false);
 }
 
 void MainWindow::createStatusBar() {
@@ -56,7 +51,7 @@ void MainWindow::createStatusBar() {
 
 
 void MainWindow::openFile() {
-    QString filename = QFileDialog::getOpenFileName(this, tr("select file"), "", tr("Tab Separated Values (*.tsv)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("select file"), "", tr("Apollo Checklist Definition (*.acd)"));
     if (filename.isEmpty()) {
         // user canceled open file
         return;
@@ -71,12 +66,12 @@ void MainWindow::openFile() {
 
 void MainWindow::saveAs()
 {
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), filename, tr("Flight Plan Files (*.tsv)"));
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), filename, tr("Apollo Checklist Definition (*.acd)"));
     if (filename.isEmpty()) {
         return;
     }
 
-    tabControl->saveAs(filename);
+    // tabControl->saveAs(filename);
 }
 
 void MainWindow::initializeTabControl() {

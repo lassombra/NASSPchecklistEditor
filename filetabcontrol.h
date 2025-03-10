@@ -12,8 +12,6 @@ public:
     void openFile(QString filename);
     void closeFile();
     void save();
-    void saveAs(QString filename);
-    void saveAll();
     void closeAll();
 
 private:

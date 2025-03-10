@@ -9,10 +9,10 @@ class EditTable : public QWidget
     Q_OBJECT
 public:
     explicit EditTable(QString filename, QWidget *parent = nullptr);
-    void loadData(QStringList& rows);
-    void save();
+    virtual void loadData(QStringList& rows);
+    virtual void save();
     void saveAs(QString filename);
-private:
+protected:
     void createEmptyTable();
     QString filename;
     QTableWidget* tableView;
