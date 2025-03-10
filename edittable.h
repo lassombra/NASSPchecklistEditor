@@ -18,6 +18,7 @@ private:
     QTableWidget* tableView;
 
 signals:
+    void messageGenerated(QString message);
 };
 
 #endif // EDITTABLE_H

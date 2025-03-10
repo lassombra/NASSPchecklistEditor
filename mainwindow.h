@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTableWidget>
+#include "filetabcontrol.h"
 
 class MainWindow : public QMainWindow
 {
@@ -13,16 +14,12 @@ public:
 private:
     void createMenus();
     void createStatusBar();
+    void initializeTabControl();
     void openFile();
-    void saveFile();
-    void closeFile();
-
-    QAction* closeAction;
+private:
+    FileTabControl* tabControl;
 
 signals:
-
 };
-
-void writeStatusText(QString);
 
 #endif // MAINWINDOW_H
