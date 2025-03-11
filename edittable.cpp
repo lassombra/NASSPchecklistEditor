@@ -3,11 +3,12 @@
 #include <QFile>
 #include <QTextStream>
 
-EditTable::EditTable(QString filename, QWidget *parent)
-    : QWidget{parent}
+EditTable::EditTable(QString filename, const QList<QStringList> *data, QWidget *parent)
+    : QTableWidget{parent}
 {
-    this->filename = filename;
-    createEmptyTable();
+    this->m_filename = filename;
+    setFullData(data);
+    m_secured = false;
 }
 
 QStringList generateHeaders(int count) {
@@ -24,54 +25,54 @@ QStringList generateHeaders(int count) {
     return headers;
 }
 
-void EditTable::loadData(QStringList& data) {
-    int rowCount = data.size();
-    int columnCount = data.first().split("\t").size();
+void EditTable::setFullData(const QList<QStringList> *data) {
+    if (!data) {
+        setRowCount(0);
+        return;
+    }
+    int rowCount = data->size();
+    int columnCount = data->first().size();
 
-    tableView->setRowCount(rowCount+1);
-    tableView->setColumnCount(columnCount);
-    tableView->setHorizontalHeaderLabels(generateHeaders(columnCount));
+    setRowCount(rowCount+1);
+    setColumnCount(columnCount);
+    setHorizontalHeaderLabels(generateHeaders(columnCount));
     for (int row = 0; row < rowCount; row++) {
-        QStringList columns = data[row].split("\t");
         for (int column = 0; column < columnCount; column++){
-            if (column < columns.size()) {
-                tableView->setItem(row, column, new QTableWidgetItem(columns[column]));
+            QStringList actualRow = data->data()[row];
+            if (column < actualRow.size()) {
+                setItem(row, column, new QTableWidgetItem(actualRow[column]));
             } else {
-                tableView->setItem(row, column, new QTableWidgetItem(""));
+                setItem(row, column, new QTableWidgetItem(""));
             }
         }
     }
     for(int column = 0; column < columnCount; column++){
-        tableView->setItem(rowCount, column, new QTableWidgetItem(""));
+        setItem(rowCount, column, new QTableWidgetItem(""));
+    }
+    if (m_secured) {
+        setColumnHidden(columnCount - 1, true);
     }
 }
 
-void EditTable::createEmptyTable() {
-    tableView = new QTableWidget(this);
-    QLayout* layout = new QVBoxLayout();
-    layout->addWidget(tableView);
-    layout->setContentsMargins(0,0,0,0);
-    setLayout(layout);
-    this->setContentsMargins(0,0,0,0);
-    this->setStyleSheet("EditTable {border: none; }");
+const QString EditTable::filename()
+{
+    return m_filename;
 }
 
-void EditTable::save() {
-    saveAs(filename);
-}
-
-void EditTable::saveAs(QString filename) {
-    QFile file(filename);
-    emit messageGenerated("Saving file " + filename);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        emit messageGenerated("Could not open for writing: " + filename);
-        return;
+void EditTable::setFilename(QString filename)
+{
+    if (m_filename != filename) {
+        m_filename = filename;
+        emit filenameChanged(filename);
     }
+}
+
+const QList<QStringList> EditTable::fullData() {
     QList<QStringList> rows = {};
-    for(int row = 0; row < tableView->rowCount(); row++) {
+    for(int row = 0; row < rowCount(); row++) {
         QStringList columns = {};
-        for (int col = 0; col < tableView->columnCount(); col++) {
-            columns << tableView->item(row, col)->text();
+        for (int col = 0; col < columnCount(); col++) {
+            columns << item(row, col)->text();
         }
         rows << columns;
     }
@@ -88,14 +89,17 @@ void EditTable::saveAs(QString filename) {
             rows.removeLast();
         }
     }
-    QTextStream stream(&file);
-    for(int row = 0; row < rows.count(); row++) {
-        stream << rows[row].join("\t");
-        if (row < rows.count() - 1) {
-            stream << "\n";
-        }
+    return rows;
+}
+
+void EditTable::setSecured(bool secured) {
+    if (m_secured != secured) {
+        m_secured = secured;
+        setColumnHidden(columnCount() - 1, secured);
+        emit securedChanged(secured);
     }
-    stream.flush();
-    file.close();
-    emit messageGenerated("Saved " + filename);
+}
+
+const bool EditTable::secured() {
+    return m_secured;
 }
