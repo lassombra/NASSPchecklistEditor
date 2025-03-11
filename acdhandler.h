@@ -14,7 +14,11 @@ public slots:
     void save();
     void close();
 private:
+    void loadChecklist(QString filename, QList<QStringList> data);
+    void loadAllChecklists(QList<QStringList> &groups);
     QList<QStringList> parseFile(QString filename);
+
+    QList<EditTable*> checklists;
     EditTable* mainTable;
 signals:
     void statusMessage(QString message);

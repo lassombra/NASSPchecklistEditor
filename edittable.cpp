@@ -3,7 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 
-EditTable::EditTable(QString filename, QList<QStringList> data, QWidget *parent)
+EditTable::EditTable(QString filename, QList<QStringList> *data, QWidget *parent)
     : QTableWidget{parent}
 {
     this->m_filename = filename;
@@ -25,22 +25,21 @@ QStringList generateHeaders(int count) {
     return headers;
 }
 
-void EditTable::setFullData(QList<QStringList> data) {
-    int rowCount = data.size();
-    if (rowCount == 0) {
+void EditTable::setFullData(const QList<QStringList> *data) {
+    if (!data) {
         setRowCount(0);
         return;
     }
-    int columnCount = data.first().size();
+    int rowCount = data->size();
+    int columnCount = data->first().size();
 
     setRowCount(rowCount+1);
     setColumnCount(columnCount);
     setHorizontalHeaderLabels(generateHeaders(columnCount));
     for (int row = 0; row < rowCount; row++) {
-        QStringList columns = data[row];
         for (int column = 0; column < columnCount; column++){
-            if (column < columns.size()) {
-                setItem(row, column, new QTableWidgetItem(columns[column]));
+            if (column < data[row].size()) {
+                setItem(row, column, new QTableWidgetItem(data->at(row)[column]));
             } else {
                 setItem(row, column, new QTableWidgetItem(""));
             }
@@ -52,7 +51,6 @@ void EditTable::setFullData(QList<QStringList> data) {
     if (m_secured) {
         setColumnHidden(columnCount - 1, true);
     }
-    emit fullDataChanged(data);
 }
 
 const QString EditTable::filename()

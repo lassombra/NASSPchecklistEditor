@@ -5,7 +5,7 @@
 ACDHandler::ACDHandler(QWidget *parent)
     : QTabWidget{parent}
 {
-    mainTable = new EditTable("", {});
+    mainTable = new EditTable("", nullptr);
     mainTable->setSecured(true);
     addTab(mainTable, "Groups");
     setTabVisible(0, false);
@@ -21,8 +21,7 @@ void ACDHandler::load(QString filename) {
         emit fileLoadedChanged(true);
     }
     mainTable->setFilename(filename);
-    mainTable->setFullData(data);
-
+    mainTable->setFullData(&data);
 }
 
 void ACDHandler::save() {
@@ -45,7 +44,7 @@ void ACDHandler::save() {
 void ACDHandler::close() {
     if (!mainTable->filename().isEmpty()) {
         mainTable->setFilename("");
-        mainTable->setFullData({});
+        mainTable->setFullData(0);
         setTabVisible(0, false);
         emit fileLoadedChanged(false);
     }
