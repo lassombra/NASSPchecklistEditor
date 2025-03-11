@@ -14,14 +14,15 @@ public slots:
     void save();
     void close();
 private:
-    void loadChecklist(QString filename, QList<QStringList> data);
-    void loadAllChecklists(QList<QStringList> &groups);
+    void loadChecklist(QString name, QString filename, const QList<QStringList> &data);
+    void loadAllChecklists(const QList<QStringList> &groups, QString rootFilename);
+    void saveData(QString filename, const QList<QStringList> &data);
     QList<QStringList> parseFile(QString filename);
 
     QList<EditTable*> checklists;
     EditTable* mainTable;
 signals:
-    void statusMessage(QString message);
+    void statusMessage(QString message, int timeout = 0);
     void fileLoadedChanged(bool loaded);
 };
 

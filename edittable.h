@@ -10,7 +10,7 @@ class EditTable : public QTableWidget
     Q_PROPERTY(bool secured READ secured WRITE setSecured NOTIFY securedChanged FINAL)
     Q_PROPERTY(QString filename READ filename WRITE setFilename NOTIFY filenameChanged FINAL)
 public:
-    explicit EditTable(QString filename, QList<QStringList> *data, QWidget *parent = nullptr);
+    explicit EditTable(QString filename, const QList<QStringList> *data, QWidget *parent = nullptr);
     const bool secured();
     void setSecured(bool secured);
     const QList<QStringList> fullData();

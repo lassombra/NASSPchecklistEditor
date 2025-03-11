@@ -77,7 +77,7 @@ void MainWindow::saveAs()
 void MainWindow::initializeTabControl() {
     tabControl = new ACDHandler(this);
 
-    connect(tabControl, SIGNAL(messageGenerated(QString)), statusBar(), SLOT(showMessage(QString)));
+    connect(tabControl, &ACDHandler::statusMessage, statusBar(), &QStatusBar::showMessage);
 
     setCentralWidget(tabControl);
 }

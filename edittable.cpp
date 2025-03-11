@@ -3,7 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 
-EditTable::EditTable(QString filename, QList<QStringList> *data, QWidget *parent)
+EditTable::EditTable(QString filename, const QList<QStringList> *data, QWidget *parent)
     : QTableWidget{parent}
 {
     this->m_filename = filename;
@@ -38,8 +38,9 @@ void EditTable::setFullData(const QList<QStringList> *data) {
     setHorizontalHeaderLabels(generateHeaders(columnCount));
     for (int row = 0; row < rowCount; row++) {
         for (int column = 0; column < columnCount; column++){
-            if (column < data[row].size()) {
-                setItem(row, column, new QTableWidgetItem(data->at(row)[column]));
+            QStringList actualRow = data->data()[row];
+            if (column < actualRow.size()) {
+                setItem(row, column, new QTableWidgetItem(actualRow[column]));
             } else {
                 setItem(row, column, new QTableWidgetItem(""));
             }
