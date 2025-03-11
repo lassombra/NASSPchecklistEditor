@@ -1,9 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "acdhandler.h"
 #include <QMainWindow>
 #include <QTableWidget>
-#include "filetabcontrol.h"
 
 class MainWindow : public QMainWindow
 {
@@ -18,7 +18,7 @@ private:
     void openFile();
     void saveAs();
 private:
-    FileTabControl* tabControl;
+    ACDHandler* tabControl;
 
 signals:
 };

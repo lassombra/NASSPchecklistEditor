@@ -3,13 +3,12 @@
 #include <qdir.h>
 
 ACDHandler::ACDHandler(QWidget *parent)
-    : QWidget{parent}
+    : QTabWidget{parent}
 {
-    this->setLayout(new QVBoxLayout(this));
-    tabControl = new FileTabControl(this);
-    this->layout()->addWidget(tabControl);
-    this->layout()->setContentsMargins(0,0,0,0);
-    this->setContentsMargins(0,0,0,0);
+    mainTable = new EditTable("", {});
+    mainTable->setSecured(true);
+    addTab(mainTable, "Groups");
+    setTabVisible(0, false);
 }
 
 void ACDHandler::load(QString filename) {
@@ -17,15 +16,39 @@ void ACDHandler::load(QString filename) {
     if (data.empty()) {
         return;
     }
+    if (mainTable->filename().isEmpty()) {
+        setTabVisible(0, true);
+        emit fileLoadedChanged(true);
+    }
+    mainTable->setFilename(filename);
+    mainTable->setFullData(data);
 
 }
 
 void ACDHandler::save() {
-
+    if(!mainTable->filename().isEmpty()) {
+        QFile file(mainTable->filename());
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            emit statusMessage("Could not open " + mainTable->filename() + " to save");
+        }
+        QTextStream output(&file);
+        QList<QStringList> rows = mainTable->fullData();
+        for(int i = 0; i < rows.count(); i ++) {
+            output << rows[i].join("\t");
+        }
+        output.flush();
+        file.close();
+        emit statusMessage("Saved " + mainTable->filename());
+    }
 }
 
 void ACDHandler::close() {
-
+    if (!mainTable->filename().isEmpty()) {
+        mainTable->setFilename("");
+        mainTable->setFullData({});
+        setTabVisible(0, false);
+        emit fileLoadedChanged(false);
+    }
 }
 
 QList<QStringList> ACDHandler::parseFile(QString filename) {

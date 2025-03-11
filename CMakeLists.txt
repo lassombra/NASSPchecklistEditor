@@ -25,7 +25,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         mainwindow.h mainwindow.cpp
         edittable.h edittable.cpp
-        filetabcontrol.h filetabcontrol.cpp
+
         acdhandler.h acdhandler.cpp
 
     )

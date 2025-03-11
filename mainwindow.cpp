@@ -23,15 +23,15 @@ void MainWindow::createMenus() {
     QAction *exitAction = new QAction(tr("E&xit"));
 
     connect(openAction, &QAction::triggered, this, &MainWindow::openFile);
-    connect(saveAction, &QAction::triggered, tabControl, &FileTabControl::save);
+    connect(saveAction, &QAction::triggered, tabControl, &ACDHandler::save);
     connect(saveAsAction, &QAction::triggered, this, &MainWindow::saveAs);
-    connect(closeAction, &QAction::triggered, tabControl, &FileTabControl::closeFile);
+    connect(closeAction, &QAction::triggered, tabControl, &ACDHandler::close);
     connect(exitAction, &QAction::triggered, this, &QWidget::close);
 
     // attach close/save/saveall to tabcontrol to set their enabled state
-    connect(tabControl, SIGNAL(fileStatusChanged(bool)), saveAction, SLOT(setEnabled(bool)));
-    connect(tabControl, SIGNAL(fileStatusChanged(bool)), closeAction, SLOT(setEnabled(bool)));
-    connect(tabControl, SIGNAL(fileStatusChanged(bool)), saveAsAction, SLOT(setEnabled(bool)));
+    connect(tabControl, &ACDHandler::fileLoadedChanged, saveAction, &QAction::setEnabled);
+    connect(tabControl, &ACDHandler::fileLoadedChanged, closeAction, &QAction::setEnabled);
+    connect(tabControl, &ACDHandler::fileLoadedChanged, saveAsAction, &QAction::setEnabled);
 
     fileMenu->addAction(openAction);
     fileMenu->addAction(saveAction);
@@ -61,7 +61,7 @@ void MainWindow::openFile() {
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return;
     }
-    tabControl->openFile(filename);
+    tabControl->load(filename);
 }
 
 void MainWindow::saveAs()
@@ -75,7 +75,7 @@ void MainWindow::saveAs()
 }
 
 void MainWindow::initializeTabControl() {
-    tabControl = new FileTabControl(this);
+    tabControl = new ACDHandler(this);
 
     connect(tabControl, SIGNAL(messageGenerated(QString)), statusBar(), SLOT(showMessage(QString)));
 

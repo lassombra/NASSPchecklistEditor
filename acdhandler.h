@@ -3,9 +3,8 @@
 
 #include <QWidget>
 #include "edittable.h"
-#include "filetabcontrol.h"
 
-class ACDHandler : public QWidget
+class ACDHandler : public QTabWidget
 {
     Q_OBJECT
 public:
@@ -16,7 +15,6 @@ public slots:
     void close();
 private:
     QList<QStringList> parseFile(QString filename);
-    FileTabControl* tabControl;
     EditTable* mainTable;
 signals:
     void statusMessage(QString message);

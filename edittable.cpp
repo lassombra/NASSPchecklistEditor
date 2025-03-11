@@ -6,7 +6,7 @@
 EditTable::EditTable(QString filename, QList<QStringList> data, QWidget *parent)
     : QTableWidget{parent}
 {
-    this->filename = filename;
+    this->m_filename = filename;
     setFullData(data);
     m_secured = false;
 }
@@ -27,6 +27,10 @@ QStringList generateHeaders(int count) {
 
 void EditTable::setFullData(QList<QStringList> data) {
     int rowCount = data.size();
+    if (rowCount == 0) {
+        setRowCount(0);
+        return;
+    }
     int columnCount = data.first().size();
 
     setRowCount(rowCount+1);
@@ -49,6 +53,19 @@ void EditTable::setFullData(QList<QStringList> data) {
         setColumnHidden(columnCount - 1, true);
     }
     emit fullDataChanged(data);
+}
+
+const QString EditTable::filename()
+{
+    return m_filename;
+}
+
+void EditTable::setFilename(QString filename)
+{
+    if (m_filename != filename) {
+        m_filename = filename;
+        emit filenameChanged(filename);
+    }
 }
 
 const QList<QStringList> EditTable::fullData() {
@@ -74,30 +91,6 @@ const QList<QStringList> EditTable::fullData() {
         }
     }
     return rows;
-}
-
-void EditTable::save() {
-    saveAs(filename);
-}
-
-void EditTable::saveAs(QString filename) {
-    QFile file(filename);
-    emit messageGenerated("Saving file " + filename);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        emit messageGenerated("Could not open for writing: " + filename);
-        return;
-    }
-    QTextStream stream(&file);
-    const QList<QStringList> rows = fullData();
-    for(int row = 0; row < rows.count(); row++) {
-        stream << rows[row].join("\t");
-        if (row < rows.count() - 1) {
-            stream << "\n";
-        }
-    }
-    stream.flush();
-    file.close();
-    emit messageGenerated("Saved " + filename);
 }
 
 void EditTable::setSecured(bool secured) {
