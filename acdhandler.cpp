@@ -3,42 +3,46 @@
 #include <qcoreapplication.h>
 #include <qdir.h>
 
+const QStringList groupHeaders = {"Name", "Time", "Deadline", "Relative Event", "Heading", "Automatic", "Manual", "Essential", "Sound", "Slow", "File"};
+const QStringList checklistHeaders = {"Text", "Time", "Relative Event", "Panel", "Heading 1", "Heading 2", "LF", "Info", "Item", "Position", "Automatic", "Call Group", "Fail Group", "Remarks"};
+
 ACDHandler::ACDHandler(QWidget *parent)
     : QTabWidget{parent}
 {
-    mainTable = new EditTable("", nullptr);
-    mainTable->setSecured(true);
-    addTab(mainTable, "Groups");
-    setTabVisible(0, false);
+    currentFile = nullptr;
+    tabPool = new TabPool(this);
 }
 
 void ACDHandler::load(QString filename) {
-    if (!mainTable->filename().isEmpty()) {
+    if (currentFile) {
         close();
     }
+    currentFile = new QFileInfo(filename);
     QList<QStringList> data = parseFile(filename);
     if (data.empty()) {
         return;
+        delete currentFile;
+        currentFile = nullptr;
     }
-    setTabVisible(0, true);
     emit fileLoadedChanged(true);
-    mainTable->setFilename(filename);
-    mainTable->setFullData(&data);
-    loadAllChecklists(data, filename);
+    loadAllChecklists(data);
     emit statusMessage("Loaded", 5000);
 }
 
 void ACDHandler::save() {
-    if(!mainTable->filename().isEmpty()) {
-        saveData(mainTable->filename(), mainTable->fullData());
-        for (EditTable* table : checklists) {
-            saveData(table->filename(), table->fullData());
+    if(currentFile) {
+        QDir directory = currentFile->absoluteDir();
+        QList<QStringList> metadata = {};
+        for (int i = 0; i < count(); i++) {
+            auto tab = (EditorTab*)widget(i);
+            metadata << saveData(tab->getMetadata(directory), tab->getData());
         }
+        saveData(currentFile->absoluteFilePath(), groupHeaders, metadata);
     }
 }
 
 
-void ACDHandler::saveData(QString filename, const QList<QStringList> &data)
+void ACDHandler::saveData(QString filename, const QStringList &headers, const QList<QStringList> &data)
 {
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -47,6 +51,7 @@ void ACDHandler::saveData(QString filename, const QList<QStringList> &data)
     QCoreApplication::processEvents();
     QTextStream output(&file);
     QStringList outdata = {};
+    outdata<< headers.join("\t");
     for(int i = 0; i < data.count(); i ++) {
         outdata << data[i].join("\t");
     }
@@ -58,44 +63,43 @@ void ACDHandler::saveData(QString filename, const QList<QStringList> &data)
 }
 
 void ACDHandler::close() {
-    if (!mainTable->filename().isEmpty()) {
+    if (currentFile) {
         clear();
+        delete currentFile;
+        currentFile = nullptr;
         QCoreApplication::processEvents();
-        for (EditTable* widget : checklists) {
-            delete widget;
-            QCoreApplication::processEvents();
-        }
-        checklists.clear();
-        mainTable->setFilename("");
-        mainTable->setFullData(nullptr);
+        tabPool->releaseAllTabs();
         emit fileLoadedChanged(false);
-        addTab(mainTable, "Groups");
-        setTabVisible(0, false);
     }
 }
 
-void ACDHandler::loadChecklist(QString name, QString filename, const QList<QStringList> &data)
+void ACDHandler::loadChecklist(QStringList metadata, QString filename, const QList<QStringList> &data)
 {
-    EditTable *table = new EditTable(filename, &data);
-    checklists << table;
-    addTab(table, name);
+    EditorTab *tab = tabPool->getTab();
+    tab->populate(metadata, filename, data);
+    addTab(tab, metadata[0]);
     QCoreApplication::processEvents();
 }
 
-void ACDHandler::loadAllChecklists(const QList<QStringList> &groups, QString rootFilename)
+void ACDHandler::loadAllChecklists(const QList<QStringList> &groups)
 {
-    QFileInfo rootFile(rootFilename);
-    QDir rootDir = rootFile.absoluteDir();
+    QDir rootDir = currentFile->absoluteDir();
     for(int row = 0; row < groups.count(); row++) {
         QStringList group = groups[row];
         if (!group[0].isEmpty() && !group[group.count()-1].isEmpty()) {
             QString fullPath = rootDir.filePath(group[group.count() - 1]);
             QList<QStringList> data = parseFile(fullPath);
             if (!data.isEmpty()) {
-                loadChecklist(group[0], fullPath, data);
+                loadChecklist(group, fullPath, data);
             }
         }
     }
+}
+
+QStringList ACDHandler::saveData(QStringList metadata, const QList<QStringList> &data)
+{
+    saveData(currentFile->absoluteDir().absoluteFilePath(metadata[10]), checklistHeaders, data);
+    return metadata;
 }
 
 QList<QStringList> ACDHandler::parseFile(QString filename) {
@@ -115,6 +119,7 @@ QList<QStringList> ACDHandler::parseFile(QString filename) {
         rows << line.split("\t");
     }
     file.close();
+    rows.removeFirst();
     emit statusMessage("Loaded " + filename);
     return rows;
 }
