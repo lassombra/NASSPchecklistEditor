@@ -27,7 +27,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         edittable.h edittable.cpp
 
         acdhandler.h acdhandler.cpp
-
+        editortab.h editortab.cpp
+        editortab.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET TSVEditor APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

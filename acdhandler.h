@@ -2,7 +2,7 @@
 #define ACDHANDLER_H
 
 #include <QWidget>
-#include "edittable.h"
+#include "editortab.h"
 
 class ACDHandler : public QTabWidget
 {
@@ -14,13 +14,14 @@ public slots:
     void save();
     void close();
 private:
-    void loadChecklist(QString name, QString filename, const QList<QStringList> &data);
-    void loadAllChecklists(const QList<QStringList> &groups, QString rootFilename);
-    void saveData(QString filename, const QList<QStringList> &data);
+    void loadChecklist(QStringList metadata, QString filename, const QList<QStringList> &data);
+    void loadAllChecklists(const QList<QStringList> &groups);
+    QStringList saveData(QStringList metadata, const QList<QStringList> &data);
+    void saveData(QString filename, const QStringList &headers, const QList<QStringList> &data);
     QList<QStringList> parseFile(QString filename);
 
-    QList<EditTable*> checklists;
-    EditTable* mainTable;
+    QList<EditorTab*> checklists;
+    QFileInfo* currentFile;
 signals:
     void statusMessage(QString message, int timeout = 0);
     void fileLoadedChanged(bool loaded);

@@ -3,26 +3,14 @@
 #include <QFile>
 #include <QTextStream>
 
+const QStringList checklistHeaders = {"Text", "Time", "Relative Event", "Panel", "Heading 1", "Heading 2", "LF", "Info", "Item", "Position", "Automatic", "Call Group", "Fail Group", "Remarks"};
+
 EditTable::EditTable(QString filename, const QList<QStringList> *data, QWidget *parent)
     : QTableWidget{parent}
 {
     this->m_filename = filename;
     setFullData(data);
     m_secured = false;
-}
-
-QStringList generateHeaders(int count) {
-    QStringList headers;
-    for(int i = 0; i < count; i++) {
-        int quotient = i;
-        QString header;
-        do {
-            header.prepend(QChar('A'+quotient % 26));
-            quotient = quotient / 26 - 1;
-        } while (quotient >= 0);
-        headers << header;
-    }
-    return headers;
 }
 
 void EditTable::setFullData(const QList<QStringList> *data) {
@@ -35,7 +23,7 @@ void EditTable::setFullData(const QList<QStringList> *data) {
 
     setRowCount(rowCount+1);
     setColumnCount(columnCount);
-    setHorizontalHeaderLabels(generateHeaders(columnCount));
+    setHorizontalHeaderLabels(checklistHeaders);
     for (int row = 0; row < rowCount; row++) {
         for (int column = 0; column < columnCount; column++){
             QStringList actualRow = data->data()[row];
