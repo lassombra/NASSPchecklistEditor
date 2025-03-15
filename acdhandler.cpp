@@ -10,6 +10,7 @@ ACDHandler::ACDHandler(QWidget *parent)
     : QTabWidget{parent}
 {
     currentFile = nullptr;
+    tabPool = new TabPool(this);
 }
 
 void ACDHandler::load(QString filename) {
@@ -32,7 +33,8 @@ void ACDHandler::save() {
     if(currentFile) {
         QDir directory = currentFile->absoluteDir();
         QList<QStringList> metadata = {};
-        for (EditorTab* tab : checklists) {
+        for (int i = 0; i < count(); i++) {
+            auto tab = (EditorTab*)widget(i);
             metadata << saveData(tab->getMetadata(directory), tab->getData());
         }
         saveData(currentFile->absoluteFilePath(), groupHeaders, metadata);
@@ -66,20 +68,15 @@ void ACDHandler::close() {
         delete currentFile;
         currentFile = nullptr;
         QCoreApplication::processEvents();
-        for (int i = 0; i < checklists.length(); i++) {
-            delete checklists[i];
-            QCoreApplication::processEvents();
-        }
-        checklists.clear();
+        tabPool->releaseAllTabs();
         emit fileLoadedChanged(false);
     }
 }
 
 void ACDHandler::loadChecklist(QStringList metadata, QString filename, const QList<QStringList> &data)
 {
-    EditorTab *tab = new EditorTab();
+    EditorTab *tab = tabPool->getTab();
     tab->populate(metadata, filename, data);
-    checklists << tab;
     addTab(tab, metadata[0]);
     QCoreApplication::processEvents();
 }

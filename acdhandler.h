@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "editortab.h"
+#include "tabpool.h"
 
 class ACDHandler : public QTabWidget
 {
@@ -20,8 +21,8 @@ private:
     void saveData(QString filename, const QStringList &headers, const QList<QStringList> &data);
     QList<QStringList> parseFile(QString filename);
 
-    QList<EditorTab*> checklists;
     QFileInfo* currentFile;
+    TabPool* tabPool;
 signals:
     void statusMessage(QString message, int timeout = 0);
     void fileLoadedChanged(bool loaded);
