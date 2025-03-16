@@ -2,7 +2,7 @@ name: Create Release
 
 on:
   workflow_run:
-    workflows: ["Build and Test"]  # Replace with the name of your previous workflow
+    workflows: ["Build Qt Project"]  # Replace with the name of your previous workflow
     types:
       - completed
 
