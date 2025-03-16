@@ -77,7 +77,8 @@ void ACDHandler::loadChecklist(QStringList metadata, QString filename, const QLi
 {
     EditorTab *tab = tabPool->getTab();
     tab->populate(metadata, filename, data);
-    addTab(tab, metadata[0]);
+    auto id = addTab(tab, metadata[0]);
+    connect(tab, &EditorTab::nameChanged, this, [id, this](QString newName){this->setTabText(id, newName);});
     QCoreApplication::processEvents();
 }
 
