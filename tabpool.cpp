@@ -12,6 +12,7 @@ EditorTab *TabPool::getTab()
         tabs << new EditorTab(this);
     }
     EditorTab* tab = tabs[currentIndex];
+    tab->disconnect();
     currentIndex++;
     return tab;
 }

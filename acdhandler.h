@@ -2,7 +2,6 @@
 #define ACDHANDLER_H
 
 #include <QWidget>
-#include "editortab.h"
 #include "tabpool.h"
 
 class ACDHandler : public QTabWidget
