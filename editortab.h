@@ -16,6 +16,7 @@ public:
     void populate(const QStringList& metadata, const QString& actualFilename, const QList<QStringList> &data);
     const QStringList getMetadata(const QDir &rootDirectory);
     const QList<QStringList> getData();
+    const QString filePath();
 private:
     EditTable* table;
     void addCheckboxes(QBoxLayout& mainLayout);

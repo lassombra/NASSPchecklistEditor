@@ -43,9 +43,10 @@ jobs:
       run: ctest --output-on-failure
 
     - name: Assemble output package
-      run: mkdir D:\a\NASSPChecklistEditor\package && copy D:\a\NASSPChecklistEditor\NasspChecklistEditor\build\Release\TSVEditor.exe D:\a\NASSPChecklistEditor\package\
+      run: mkdir D:\a\NASSPChecklistEditor\package && copy D:\a\NASSPChecklistEditor\NasspChecklistEditor\build\Release\ChecklistEditor.exe D:\a\NASSPChecklistEditor\package\
+
     - name: Bundle QT packages
-      run: D:\a\NASSPchecklistEditor\Qt\6.8.2\msvc2022_64\bin\windeployqt.exe D:\a\NASSPChecklistEditor\package\TSVEditor.exe
+      run: D:\a\NASSPchecklistEditor\Qt\6.8.2\msvc2022_64\bin\windeployqt.exe D:\a\NASSPChecklistEditor\package\ChecklistEditor.exe
 
     - name: Upload build artifact
       uses: actions/upload-artifact@v4.6.1

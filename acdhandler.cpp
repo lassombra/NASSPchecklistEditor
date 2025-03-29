@@ -10,6 +10,8 @@ ACDHandler::ACDHandler(QWidget *parent)
     : QTabWidget{parent}
 {
     currentFile = nullptr;
+    this->setTabsClosable(true);
+    connect(this, &QTabWidget::tabCloseRequested, this, &ACDHandler::initRemoveTab);
     tabPool = new TabPool(this);
 }
 
@@ -123,4 +125,30 @@ QList<QStringList> ACDHandler::parseFile(QString filename) {
     rows.removeFirst();
     emit statusMessage("Loaded " + filename);
     return rows;
+}
+
+void ACDHandler::initRemoveTab(int index)
+{
+    m_pendingRemoveIndex = index;
+    removeDialog = new RemoveDialog(this);
+    connect(removeDialog, &RemoveDialog::decisionChanged, this, &ACDHandler::acceptRemove);
+    connect(removeDialog, &RemoveDialog::rejected, this, &ACDHandler::cancelRemove);
+    removeDialog->show();
+}
+
+void ACDHandler::cancelRemove()
+{
+    removeDialog->deleteLater();
+    removeDialog = nullptr;
+}
+
+void ACDHandler::acceptRemove(int decision)
+{
+    auto tab = (EditorTab *)this->widget(m_pendingRemoveIndex);
+    this->removeTab(m_pendingRemoveIndex);
+    if (decision == RemoveDialog::DeleteAction) {
+        QFile file(tab->filePath());
+        file.remove();
+        save();
+    }
 }

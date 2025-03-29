@@ -70,6 +70,11 @@ const QList<QStringList> EditorTab::getData()
     return table->fullData();
 }
 
+const QString EditorTab::filePath()
+{
+    return table->filename();
+}
+
 void EditorTab::addCheckboxes(QBoxLayout &mainLayout)
 {
     QLayout* checkboxes = new QHBoxLayout();
