@@ -83,6 +83,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: $GITHUB_WORKSPACE  # Adjust the path based on where the downloaded artifact is located
         asset_name: editor.zip  # Adjust the name based on your artifact
         asset_content_type: application/zip
