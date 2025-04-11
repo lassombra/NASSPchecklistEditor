@@ -77,9 +77,9 @@ jobs:
         release_name: Release ${{ github.run_id }}
         draft: true
         prerelease: true
-    - name: log release asset path
-      id: log_path
-      run: ls -la /home/runner/work/NASSPchecklistEditor/NASSPchecklistEditor
+    - name: Zip the artifact folder
+      id: zip
+      run: zip -r /home/runner/work/NASSPChecklistEditor/editor.zip /home/runner/work/NASSPchecklistEditor/NASSPchecklistEditor
   
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
@@ -89,4 +89,4 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_name: editor.zip  # Adjust the name based on your artifact
         asset_content_type: application/zip
-        asset_path: /home/runner/work/NASSPchecklistEditor/NASSPchecklistEditor/editor
+        asset_path: /home/runner/work/NASSPchecklistEditor/editor.zip
