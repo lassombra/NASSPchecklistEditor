@@ -65,6 +65,7 @@ jobs:
       uses: actions/download-artifact@v4.1.9
       with:
         name: editor
+        path: /home/runner/work/NASSPchecklistEditor/NASSPchecklistEditor
   
     - name: Create Release
       id: create_release
@@ -85,3 +86,4 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_name: editor.zip  # Adjust the name based on your artifact
         asset_content_type: application/zip
+        asset_path: /home/runner/work/NASSPchecklistEditor/NASSPchecklistEditor
