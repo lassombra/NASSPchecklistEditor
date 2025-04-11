@@ -77,6 +77,9 @@ jobs:
         release_name: Release ${{ github.run_id }}
         draft: true
         prerelease: true
+    - name: log release asset path
+      id: log_path
+      run: ls -la /home/runner/work/NASSPchecklistEditor/NASSPchecklistEditor
   
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
