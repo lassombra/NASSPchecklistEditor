@@ -79,7 +79,7 @@ jobs:
         prerelease: true
     - name: Zip the artifact folder
       id: zip
-      run: zip -r /home/runner/work/NASSPChecklistEditor/editor.zip /home/runner/work/NASSPchecklistEditor/NASSPchecklistEditor
+      run: zip -r /home/runner/work/NASSPchecklistEditor/editor.zip /home/runner/work/NASSPchecklistEditor/NASSPchecklistEditor
   
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
