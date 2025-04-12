@@ -1,22 +1,23 @@
-#ifndef REMOVEDIALOG_H
-#define REMOVEDIALOG_H
+#ifndef ADDDIALOG_H
+#define ADDDIALOG_H
 
 #include <QDialog>
 
-class RemoveDialog : public QDialog
+class AddDialog : public QDialog
 {
     Q_OBJECT
     Q_PROPERTY(int decision READ decision WRITE setDecision NOTIFY decisionChanged FINAL)
 
 public:
-    explicit RemoveDialog(QWidget *parent = nullptr);
-    ~RemoveDialog();
+    explicit AddDialog(QWidget *parent = nullptr);
+    ~AddDialog();
     int decision();
 
-    enum RemoveAction{
+    enum AddAction{
         InvalidDecision = -1,
-        DeleteAction,
-        DetachAction
+        Attach,
+        Copy,
+        New
     };
 
 private:
@@ -28,4 +29,4 @@ signals:
     void decisionChanged(int decision);
 };
 
-#endif // REMOVEDIALOG_H
+#endif // ADDDIALOG_H

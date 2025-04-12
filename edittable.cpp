@@ -19,7 +19,7 @@ void EditTable::setFullData(const QList<QStringList> *data) {
         return;
     }
     int rowCount = data->size();
-    int columnCount = data->first().size();
+    int columnCount = 14;
 
     setRowCount(rowCount+1);
     setColumnCount(columnCount);
@@ -65,7 +65,7 @@ const QList<QStringList> EditTable::fullData() {
         rows << columns;
     }
     bool found = false;
-    while (!found) {
+    while (!found && !rows.isEmpty()) {
         QStringList row = rows.last();
         for (int col = 0; col < row.count(); col++) {
             if (!row[col].isEmpty()) {

@@ -1,7 +1,11 @@
 #include "acdhandler.h"
+#include "squarepushbutton.h"
 #include <qboxlayout.h>
 #include <qcoreapplication.h>
+#include <QFileDialog>
 #include <qdir.h>
+#include <qpushbutton.h>
+#include <QSizePolicy>
 
 const QStringList groupHeaders = {"Name", "Time", "Deadline", "Relative Event", "Heading", "Automatic", "Manual", "Essential", "Sound", "Slow", "File"};
 const QStringList checklistHeaders = {"Text", "Time", "Relative Event", "Panel", "Heading 1", "Heading 2", "LF", "Info", "Item", "Position", "Automatic", "Call Group", "Fail Group", "Remarks"};
@@ -10,9 +14,12 @@ ACDHandler::ACDHandler(QWidget *parent)
     : QTabWidget{parent}
 {
     currentFile = nullptr;
+    cornerWidget = nullptr;
     this->setTabsClosable(true);
+
     connect(this, &QTabWidget::tabCloseRequested, this, &ACDHandler::initRemoveTab);
     tabPool = new TabPool(this);
+    addNewTabButton();
 }
 
 void ACDHandler::load(QString filename) {
@@ -151,4 +158,46 @@ void ACDHandler::acceptRemove(int decision)
         file.remove();
         save();
     }
+}
+
+void ACDHandler::addNewTabButton()
+{
+    auto newTabButton = new SquarePushButton("+");
+    newTabButton->setContentsMargins(0,0,0,0);
+    connect(newTabButton, &QPushButton::clicked, this, &ACDHandler::initAddTab);
+    this->setCornerWidget(newTabButton, Qt::TopRightCorner);
+}
+
+void ACDHandler::initAddTab()
+{
+    addDialog = new AddDialog(this);
+    connect(addDialog, &AddDialog::decisionChanged, this, &ACDHandler::acceptAdd);
+    connect(addDialog, &AddDialog::rejected, this, &ACDHandler::cancelAdd);
+    addDialog->show();
+}
+
+void ACDHandler::cancelAdd()
+{
+    addDialog->deleteLater();
+    addDialog = nullptr;
+}
+
+void ACDHandler::acceptAdd(int decision)
+{
+    QString sourceFile;
+    QString destinationFile;
+    if (decision != AddDialog::New) {
+        sourceFile = QFileDialog::getOpenFileName(this, tr("select file"), "", tr("Apollo checklist file (*.acf)"));
+    }
+    if (decision != AddDialog::Attach) {
+        destinationFile = QFileDialog::getSaveFileName(this, tr("Select path for new tab"), "", tr("Apollo checklist file (*.acf)"));
+    } else {
+        destinationFile = sourceFile;
+    }
+    QStringList metadata = {"New Tab", "0", "0","","","0","0","0","","0",destinationFile};
+    QList<QStringList> data = {};
+    if (decision != AddDialog::New) {
+        data = parseFile(sourceFile);
+    }
+    loadChecklist(metadata, destinationFile, data);
 }

@@ -2,6 +2,7 @@
 #define ACDHANDLER_H
 
 #include <QWidget>
+#include "adddialog.h"
 #include "removedialog.h"
 #include "tabpool.h"
 
@@ -23,10 +24,17 @@ private:
     void initRemoveTab(int index);
     void cancelRemove();
     void acceptRemove(int decision);
+    void addNewTabButton();
+
+    void initAddTab();
+    void cancelAdd();
+    void acceptAdd(int decision);
 
     QFileInfo* currentFile;
+    QWidget* cornerWidget;
     TabPool* tabPool;
     RemoveDialog* removeDialog;
+    AddDialog* addDialog;
     int m_pendingRemoveIndex;
 signals:
     void statusMessage(QString message, int timeout = 0);
